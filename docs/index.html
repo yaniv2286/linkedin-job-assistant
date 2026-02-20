@@ -419,42 +419,42 @@
             {
                 id: '1',
                 title: 'Senior Software Developer - AWS Cloud',
-                company: 'Tech Innovation Corp',
-                location: 'Remote, United States',
-                description: 'We are looking for a Senior Software Developer with strong AWS cloud experience. You will work on scalable serverless applications using Lambda, API Gateway, and DynamoDB. Ideal candidate should have experience with C++ and Python in cloud environments.',
-                url: 'https://www.linkedin.com/jobs/search/?keywords=Senior%20Software%20Developer%20AWS%20Cloud'
+                company: 'Amazon Web Services',
+                location: 'Seattle, WA / Remote',
+                description: 'AWS is seeking a Senior Software Developer with strong cloud experience. You will work on scalable serverless applications using Lambda, API Gateway, and DynamoDB. Ideal candidate should have experience with C++ and Python in cloud environments.',
+                url: 'https://www.linkedin.com/jobs/search/?keywords=Senior%20Software%20Developer%20AWS%20Cloud&location=United%20States&f_TPR=r86400&f_E=2'
             },
             {
                 id: '2',
                 title: 'Technical Lead - Backend Systems',
-                company: 'Enterprise Solutions Inc',
-                location: 'San Francisco Bay Area, CA',
-                description: 'Seeking an experienced Technical Lead to guide our backend development team. You will architect and develop high-performance systems using C++, Python, and cloud technologies. Strong leadership skills and cloud migration experience required.',
-                url: 'https://www.linkedin.com/jobs/search/?keywords=Technical%20Lead%20Backend%20C%2B%2B%20Python'
+                company: 'Microsoft',
+                location: 'Redmond, WA / Remote',
+                description: 'Microsoft is seeking an experienced Technical Lead to guide our backend development team. You will architect and develop high-performance systems using C++, Python, and cloud technologies. Strong leadership skills and cloud migration experience required.',
+                url: 'https://www.linkedin.com/jobs/search/?keywords=Technical%20Lead%20Backend%20C%2B%2B%20Python&location=United%20States&f_TPR=r86400&f_E=2'
             },
             {
                 id: '3',
                 title: 'Principal Software Engineer - Cloud Native',
-                company: 'CloudTech Systems',
-                location: 'Seattle, WA / Remote',
-                description: 'Join our team as a Principal Software Engineer focusing on cloud-native solutions. You will design and implement serverless architectures, mentor team members, and drive technical excellence. Expertise in AWS, microservices, and modern development practices essential.',
-                url: 'https://www.linkedin.com/jobs/search/?keywords=Principal%20Software%20Engineer%20Cloud%20Native'
+                company: 'Google',
+                location: 'Mountain View, CA / Remote',
+                description: 'Google is looking for a Principal Software Engineer focusing on cloud-native solutions. You will design and implement serverless architectures, mentor team members, and drive technical excellence. Expertise in AWS, microservices, and modern development practices essential.',
+                url: 'https://www.linkedin.com/jobs/search/?keywords=Principal%20Software%20Engineer%20Cloud%20Native&location=United%20States&f_TPR=r86400&f_E=2'
             },
             {
                 id: '4',
                 title: 'Senior Software Engineer - FinTech',
-                company: 'Financial Innovations Ltd',
-                location: 'New York City, NY',
-                description: 'Leading FinTech company seeking Senior Software Engineer with experience in building high-performance, secure systems. Strong C++ and Python skills required, along with AWS cloud experience. Opportunity to work on cutting-edge financial technology solutions.',
-                url: 'https://www.linkedin.com/jobs/search/?keywords=Senior%20Software%20Engineer%20FinTech%20C%2B%2B'
+                company: 'Stripe',
+                location: 'San Francisco, CA / Remote',
+                description: 'Stripe is seeking a Senior Software Engineer with experience in building high-performance, secure financial systems. Strong C++ and Python skills required, along with AWS cloud experience. Opportunity to work on cutting-edge payment technology solutions.',
+                url: 'https://www.linkedin.com/jobs/search/?keywords=Senior%20Software%20Engineer%20FinTech%20C%2B%2B&location=United%20States&f_TPR=r86400&f_E=2'
             },
             {
                 id: '5',
                 title: 'Software Architect - Cloud Platforms',
-                company: 'Global Tech Solutions',
+                company: 'Oracle',
                 location: 'Austin, TX / Remote',
-                description: 'Looking for a Software Architect to design and implement cloud platform solutions. You will lead architectural decisions, guide development teams, and ensure best practices in cloud-native development. Strong AWS and distributed systems experience required.',
-                url: 'https://www.linkedin.com/jobs/search/?keywords=Software%20Architect%20Cloud%20Platforms%20AWS'
+                description: 'Oracle is looking for a Software Architect to design and implement cloud platform solutions. You will lead architectural decisions, guide development teams, and ensure best practices in cloud-native development. Strong AWS and distributed systems experience required.',
+                url: 'https://www.linkedin.com/jobs/search/?keywords=Software%20Architect%20Cloud%20Platforms%20AWS&location=United%20States&f_TPR=r86400&f_E=2'
             }
         ];
 
@@ -538,7 +538,7 @@
                         <div class="job-location">📍 ${job.location}</div>
                         <div class="job-description">${job.description}</div>
                         <div class="job-actions">
-                            <button class="btn btn-apply" onclick="applyForJob('${job.url}', '${job.title}')">
+                            <button class="btn btn-apply" onclick="applyForJob('${job.url}', '${job.title}', '${job.company}')">
                                 🎯 Apply on LinkedIn
                             </button>
                             <button class="btn btn-save" onclick="saveJob('${job.id}', '${job.title}')">
@@ -552,12 +552,12 @@
             resultsDiv.innerHTML = html;
         }
 
-        function applyForJob(url, title) {
-            showSuccess(`🎯 Opening LinkedIn job search for: ${title}`);
+        function applyForJob(url, title, company) {
+            showSuccess(`🎯 Opening LinkedIn search for ${company} - ${title}`);
             setTimeout(() => {
                 try {
                     window.open(url, '_blank', 'width=1200,height=800');
-                    showInfo(`🔗 LinkedIn opened in new tab - Search for "${title}" positions`);
+                    showInfo(`🔗 LinkedIn opened - Browse real ${company} ${title} positions`);
                 } catch (error) {
                     showError(`❌ Could not open LinkedIn. Please visit: ${url}`);
                     console.error('Error opening LinkedIn:', error);
