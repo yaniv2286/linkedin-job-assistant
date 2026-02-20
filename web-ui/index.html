@@ -1,0 +1,701 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LinkedIn Job Assistant</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: #f8f9fa;
+            color: #333;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #0077b5, #005885);
+            color: white;
+            padding: 1rem 2rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .header h1 {
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .dashboard {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .card {
+            background: white;
+            border-radius: 8px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .card h2 {
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+            color: #0077b5;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 0.5rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 0.9rem;
+        }
+
+        .btn {
+            background: #0077b5;
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: background 0.2s;
+        }
+
+        .btn:hover {
+            background: #005885;
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+        }
+
+        .btn-secondary:hover {
+            background: #545b62;
+        }
+
+        .btn-success {
+            background: #28a745;
+        }
+
+        .btn-success:hover {
+            background: #1e7e34;
+        }
+
+        .job-list {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .job-item {
+            border: 1px solid #e9ecef;
+            border-radius: 4px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .job-item:hover {
+            background: #f8f9fa;
+        }
+
+        .job-item.selected {
+            background: #e3f2fd;
+            border-color: #0077b5;
+        }
+
+        .job-title {
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .job-company {
+            color: #666;
+            font-size: 0.9rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .job-location {
+            color: #888;
+            font-size: 0.8rem;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 1rem;
+            border-radius: 8px;
+            text-align: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #0077b5;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            color: #666;
+            margin-top: 0.25rem;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background: white;
+            margin: 5% auto;
+            padding: 2rem;
+            border-radius: 8px;
+            max-width: 600px;
+            position: relative;
+        }
+
+        .close {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #666;
+        }
+
+        .close:hover {
+            color: #333;
+        }
+
+        .application-preview {
+            background: #f8f9fa;
+            padding: 1rem;
+            border-radius: 4px;
+            margin-bottom: 1rem;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 0.25rem 0.5rem;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .status-pending { background: #fff3cd; color: #856404; }
+        .status-applied { background: #d4edda; color: #155724; }
+        .status-interviewing { background: #cce5ff; color: #004085; }
+        .status-rejected { background: #f8d7da; color: #721c24; }
+        .status-offered { background: #d1ecf1; color: #0c5460; }
+
+        .loading {
+            text-align: center;
+            padding: 2rem;
+            color: #666;
+        }
+
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 1rem;
+            border-radius: 4px;
+            margin-bottom: 1rem;
+        }
+
+        .success {
+            background: #d4edda;
+            color: #155724;
+            padding: 1rem;
+            border-radius: 4px;
+            margin-bottom: 1rem;
+        }
+
+        @media (max-width: 768px) {
+            .dashboard {
+                grid-template-columns: 1fr;
+            }
+            
+            .stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <h1>LinkedIn Job Assistant</h1>
+    </header>
+
+    <div class="container">
+        <div id="message"></div>
+
+        <div class="stats" id="stats">
+            <div class="stat-card">
+                <div class="stat-number" id="total-jobs">0</div>
+                <div class="stat-label">Total Jobs</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="applications">0</div>
+                <div class="stat-label">Applications</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="interviews">0</div>
+                <div class="stat-label">Interviews</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="response-rate">0%</div>
+                <div class="stat-label">Response Rate</div>
+            </div>
+        </div>
+
+        <div class="dashboard">
+            <div class="card">
+                <h2>Job Search Settings</h2>
+                <form id="search-form">
+                    <div class="form-group">
+                        <label for="keywords">Keywords</label>
+                        <input type="text" id="keywords" placeholder="e.g., Software Engineer, React, Node.js" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="location">Location</label>
+                        <input type="text" id="location" placeholder="e.g., San Francisco, Remote">
+                    </div>
+                    <div class="form-group">
+                        <label for="job-type">Job Type</label>
+                        <select id="job-type">
+                            <option value="">Any</option>
+                            <option value="full-time">Full-time</option>
+                            <option value="part-time">Part-time</option>
+                            <option value="contract">Contract</option>
+                            <option value="internship">Internship</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="experience-level">Experience Level</label>
+                        <select id="experience-level">
+                            <option value="">Any</option>
+                            <option value="entry">Entry Level</option>
+                            <option value="mid">Mid Level</option>
+                            <option value="senior">Senior Level</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn" id="search-btn">Start Monitoring</button>
+                    <button type="button" class="btn btn-secondary" id="stop-btn" style="display: none;">Stop Monitoring</button>
+                </form>
+            </div>
+
+            <div class="card">
+                <h2>Recent Jobs</h2>
+                <div id="job-list" class="job-list">
+                    <div class="loading">No jobs found. Start monitoring to see job listings.</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>Recent Applications</h2>
+            <div id="application-list">
+                <div class="loading">No applications yet.</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Application Modal -->
+    <div id="application-modal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Prepare Application</h2>
+            <div id="application-job-info"></div>
+            
+            <div class="form-group">
+                <label for="resume-template">Resume Template</label>
+                <select id="resume-template">
+                    <option value="default">Default Resume</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="cover-letter-template">Cover Letter Template</label>
+                <select id="cover-letter-template">
+                    <option value="default">Default Cover Letter</option>
+                </select>
+            </div>
+            
+            <button type="button" class="btn" id="prepare-btn">Prepare Application</button>
+            
+            <div id="application-preview" style="display: none;">
+                <h3>Application Preview</h3>
+                <div class="application-preview">
+                    <h4>Resume</h4>
+                    <div id="resume-preview"></div>
+                    <h4>Cover Letter</h4>
+                    <div id="cover-letter-preview"></div>
+                </div>
+                <button type="button" class="btn btn-success" id="apply-btn">Apply on LinkedIn</button>
+                <button type="button" class="btn btn-secondary" id="track-btn">Track Application</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        class JobAssistant {
+            constructor() {
+                this.selectedJob = null;
+                this.isMonitoring = false;
+                this.initEventListeners();
+                this.loadStats();
+                this.loadApplications();
+                this.loadTemplates();
+            }
+
+            initEventListeners() {
+                // Search form
+                document.getElementById('search-form').addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    this.startMonitoring();
+                });
+
+                document.getElementById('stop-btn').addEventListener('click', () => {
+                    this.stopMonitoring();
+                });
+
+                // Modal
+                document.querySelector('.close').addEventListener('click', () => {
+                    this.closeModal();
+                });
+
+                document.getElementById('prepare-btn').addEventListener('click', () => {
+                    this.prepareApplication();
+                });
+
+                document.getElementById('apply-btn').addEventListener('click', () => {
+                    this.applyOnLinkedIn();
+                });
+
+                document.getElementById('track-btn').addEventListener('click', () => {
+                    this.trackApplication();
+                });
+
+                // Close modal on outside click
+                window.addEventListener('click', (e) => {
+                    if (e.target.id === 'application-modal') {
+                        this.closeModal();
+                    }
+                });
+            }
+
+            async startMonitoring() {
+                const keywords = document.getElementById('keywords').value;
+                const location = document.getElementById('location').value;
+                const jobType = document.getElementById('job-type').value;
+                const experienceLevel = document.getElementById('experience-level').value;
+
+                try {
+                    const response = await fetch('/api/jobs/monitor', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ keywords, location, jobType, experienceLevel })
+                    });
+
+                    const data = await response.json();
+                    if (data.success) {
+                        this.isMonitoring = true;
+                        document.getElementById('search-btn').style.display = 'none';
+                        document.getElementById('stop-btn').style.display = 'block';
+                        this.showMessage('Job monitoring started!', 'success');
+                        this.loadJobs();
+                    } else {
+                        this.showMessage(data.error, 'error');
+                    }
+                } catch (error) {
+                    this.showMessage('Failed to start monitoring', 'error');
+                }
+            }
+
+            async stopMonitoring() {
+                try {
+                    const response = await fetch('/api/jobs/stop', { method: 'POST' });
+                    const data = await response.json();
+                    
+                    if (data.success) {
+                        this.isMonitoring = false;
+                        document.getElementById('search-btn').style.display = 'block';
+                        document.getElementById('stop-btn').style.display = 'none';
+                        this.showMessage('Job monitoring stopped', 'success');
+                    }
+                } catch (error) {
+                    this.showMessage('Failed to stop monitoring', 'error');
+                }
+            }
+
+            async loadJobs() {
+                try {
+                    const response = await fetch('/api/jobs?limit=20');
+                    const data = await response.json();
+                    
+                    if (data.success) {
+                        this.displayJobs(data.data);
+                        document.getElementById('total-jobs').textContent = data.total;
+                    }
+                } catch (error) {
+                    console.error('Failed to load jobs:', error);
+                }
+            }
+
+            displayJobs(jobs) {
+                const jobList = document.getElementById('job-list');
+                
+                if (jobs.length === 0) {
+                    jobList.innerHTML = '<div class="loading">No jobs found.</div>';
+                    return;
+                }
+
+                jobList.innerHTML = jobs.map(job => `
+                    <div class="job-item" data-job-id="${job.id}">
+                        <div class="job-title">${job.title}</div>
+                        <div class="job-company">${job.company}</div>
+                        <div class="job-location">${job.location}</div>
+                    </div>
+                `).join('');
+
+                // Add click listeners
+                document.querySelectorAll('.job-item').forEach(item => {
+                    item.addEventListener('click', () => {
+                        const jobId = item.dataset.jobId;
+                        this.selectJob(jobId);
+                    });
+                });
+            }
+
+            async selectJob(jobId) {
+                // Remove previous selection
+                document.querySelectorAll('.job-item').forEach(item => {
+                    item.classList.remove('selected');
+                });
+
+                // Add selection to clicked item
+                document.querySelector(`[data-job-id="${jobId}"]`).classList.add('selected');
+
+                // Get job details
+                try {
+                    const response = await fetch(`/api/jobs`);
+                    const data = await response.json();
+                    this.selectedJob = data.data.find(job => job.id === jobId);
+                    
+                    if (this.selectedJob) {
+                        this.openApplicationModal();
+                    }
+                } catch (error) {
+                    console.error('Failed to get job details:', error);
+                }
+            }
+
+            openApplicationModal() {
+                const modal = document.getElementById('application-modal');
+                const jobInfo = document.getElementById('application-job-info');
+                
+                jobInfo.innerHTML = `
+                    <h3>${this.selectedJob.title}</h3>
+                    <p><strong>Company:</strong> ${this.selectedJob.company}</p>
+                    <p><strong>Location:</strong> ${this.selectedJob.location}</p>
+                    <p><strong>Posted:</strong> ${this.selectedJob.postedDate}</p>
+                `;
+                
+                modal.style.display = 'block';
+            }
+
+            closeModal() {
+                document.getElementById('application-modal').style.display = 'none';
+                document.getElementById('application-preview').style.display = 'none';
+            }
+
+            async prepareApplication() {
+                const resumeTemplate = document.getElementById('resume-template').value;
+                const coverLetterTemplate = document.getElementById('cover-letter-template').value;
+
+                try {
+                    const response = await fetch('/api/applications/prepare', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            jobId: this.selectedJob.id,
+                            resumeTemplate,
+                            coverLetterTemplate
+                        })
+                    });
+
+                    const data = await response.json();
+                    
+                    if (data.success) {
+                        this.displayApplicationPreview(data.data);
+                    } else {
+                        this.showMessage(data.error, 'error');
+                    }
+                } catch (error) {
+                    this.showMessage('Failed to prepare application', 'error');
+                }
+            }
+
+            displayApplicationPreview(materials) {
+                document.getElementById('resume-preview').textContent = materials.resume;
+                document.getElementById('cover-letter-preview').textContent = materials.coverLetter;
+                document.getElementById('application-preview').style.display = 'block';
+            }
+
+            applyOnLinkedIn() {
+                if (this.selectedJob) {
+                    window.open(this.selectedJob.url, '_blank');
+                    this.showMessage('Opening LinkedIn application page...', 'success');
+                }
+            }
+
+            async trackApplication() {
+                try {
+                    const response = await fetch('/api/applications/track', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            jobId: this.selectedJob.id,
+                            status: 'applied',
+                            notes: 'Applied via LinkedIn Job Assistant'
+                        })
+                    });
+
+                    const data = await response.json();
+                    
+                    if (data.success) {
+                        this.showMessage('Application tracked successfully!', 'success');
+                        this.closeModal();
+                        this.loadApplications();
+                        this.loadStats();
+                    } else {
+                        this.showMessage(data.error, 'error');
+                    }
+                } catch (error) {
+                    this.showMessage('Failed to track application', 'error');
+                }
+            }
+
+            async loadApplications() {
+                try {
+                    const response = await fetch('/api/applications');
+                    const data = await response.json();
+                    
+                    if (data.success) {
+                        this.displayApplications(data.data);
+                    }
+                } catch (error) {
+                    console.error('Failed to load applications:', error);
+                }
+            }
+
+            displayApplications(applications) {
+                const appList = document.getElementById('application-list');
+                
+                if (applications.length === 0) {
+                    appList.innerHTML = '<div class="loading">No applications yet.</div>';
+                    return;
+                }
+
+                appList.innerHTML = applications.slice(0, 10).map(app => `
+                    <div class="job-item">
+                        <div class="job-title">${app.jobId}</div>
+                        <div class="job-company">Status: <span class="status-badge status-${app.status}">${app.status}</span></div>
+                        <div class="job-location">Applied: ${new Date(app.appliedAt).toLocaleDateString()}</div>
+                    </div>
+                `).join('');
+            }
+
+            async loadStats() {
+                try {
+                    const response = await fetch('/api/stats');
+                    const data = await response.json();
+                    
+                    if (data.success) {
+                        document.getElementById('applications').textContent = data.data.total;
+                        document.getElementById('interviews').textContent = data.data.byStatus.interviewing;
+                        document.getElementById('response-rate').textContent = data.data.responseRate + '%';
+                    }
+                } catch (error) {
+                    console.error('Failed to load stats:', error);
+                }
+            }
+
+            async loadTemplates() {
+                try {
+                    const response = await fetch('/api/templates?type=resume');
+                    const data = await response.json();
+                    
+                    if (data.success) {
+                        const resumeSelect = document.getElementById('resume-template');
+                        resumeSelect.innerHTML = data.data.map(template => 
+                            `<option value="${template}">${template}</option>`
+                        ).join('');
+                    }
+                } catch (error) {
+                    console.error('Failed to load templates:', error);
+                }
+            }
+
+            showMessage(message, type) {
+                const messageDiv = document.getElementById('message');
+                messageDiv.innerHTML = `<div class="${type}">${message}</div>`;
+                
+                setTimeout(() => {
+                    messageDiv.innerHTML = '';
+                }, 5000);
+            }
+        }
+
+        // Initialize the app
+        const app = new JobAssistant();
+
+        // Auto-refresh jobs if monitoring
+        setInterval(() => {
+            if (app.isMonitoring) {
+                app.loadJobs();
+            }
+        }, 30000); // Refresh every 30 seconds
+    </script>
+</body>
+</html>
