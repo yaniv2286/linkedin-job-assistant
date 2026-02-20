@@ -397,9 +397,14 @@
                     </select>
                 </div>
                 
-                <button type="submit" class="btn" id="searchBtn">
-                    🚀 Start Job Monitoring
-                </button>
+                <div style="display: flex; gap: 15px; flex-wrap: wrap;">
+                    <button type="submit" class="btn" id="searchBtn">
+                        🚀 Start Job Monitoring
+                    </button>
+                    <button type="button" class="btn btn-easy-apply" onclick="startEasyApplySearch()" style="background: linear-gradient(135deg, #28a745, #20c997);">
+                        ⚡ Easy Apply Only
+                    </button>
+                </div>
             </form>
         </div>
 
@@ -457,6 +462,70 @@
                 url: 'https://www.linkedin.com/jobs/search/?keywords=Software%20Architect%20Cloud%20Platforms%20AWS&location=United%20States&f_TPR=r86400&f_E=2'
             }
         ];
+
+        function startEasyApplySearch() {
+            // Get user's search criteria from the form
+            const keywords = document.getElementById('keywords').value;
+            const location = document.getElementById('location').value;
+            const jobType = document.getElementById('jobType').value;
+            const experience = document.getElementById('experience').value;
+            
+            // Build LinkedIn search URL with Easy Apply filter
+            let searchUrl = 'https://www.linkedin.com/jobs/search/?';
+            const params = [];
+            
+            // Add keywords
+            if (keywords) {
+                params.push(`keywords=${encodeURIComponent(keywords)}`);
+            }
+            
+            // Add location
+            if (location) {
+                params.push(`location=${encodeURIComponent(location)}`);
+            }
+            
+            // Add Easy Apply filter (key filter!)
+            params.push('f_AL=true');
+            
+            // Add job type filter
+            if (jobType) {
+                const jobTypeMap = {
+                    'full-time': 'F',
+                    'part-time': 'P', 
+                    'contract': 'C',
+                    'internship': 'I'
+                };
+                params.push(`f_JT=${jobTypeMap[jobType] || ''}`);
+            }
+            
+            // Add experience level filter
+            if (experience) {
+                const expMap = {
+                    'entry': '1',
+                    'mid': '2', 
+                    'senior': '3'
+                };
+                params.push(`f_E=${expMap[experience] || '3'}`);
+            }
+            
+            // Add time filter (last 24 hours for fresh jobs)
+            params.push('f_TPR=r86400');
+            
+            searchUrl += params.join('&');
+            
+            showSuccess(`⚡ Opening LinkedIn Easy Apply jobs only!`);
+            showInfo(`🔍 Quick applications: ${keywords} | ${location} | ${jobType || 'Any'} | ${experience} | ✅ Easy Apply Only`);
+            
+            setTimeout(() => {
+                try {
+                    window.open(searchUrl, '_blank', 'width=1200,height=800');
+                    showInfo(`🚀 LinkedIn opened - Apply to 10+ jobs in under 30 minutes!`);
+                } catch (error) {
+                    showError(`❌ Could not open LinkedIn. Please visit: ${searchUrl}`);
+                    console.error('Error opening LinkedIn:', error);
+                }
+            }, 1000);
+        }
 
         let isMonitoring = false;
         let monitoringInterval = null;
@@ -559,7 +628,7 @@
             const jobType = document.getElementById('jobType').value;
             const experience = document.getElementById('experience').value;
             
-            // Build LinkedIn search URL with user's criteria
+            // Build LinkedIn search URL with user's criteria + Easy Apply filter
             let searchUrl = 'https://www.linkedin.com/jobs/search/?';
             const params = [];
             
@@ -572,6 +641,9 @@
             if (location) {
                 params.push(`location=${encodeURIComponent(location)}`);
             }
+            
+            // Add Easy Apply filter (this is the key addition!)
+            params.push('f_AL=true'); // Easy Apply filter
             
             // Add job type filter
             if (jobType) {
@@ -599,13 +671,13 @@
             
             searchUrl += params.join('&');
             
-            showSuccess(`🎯 Opening LinkedIn search for ${company} - ${title}`);
-            showInfo(`🔍 Using your criteria: ${keywords} | ${location} | ${jobType || 'Any'} | ${experience}`);
+            showSuccess(`🎯 Opening LinkedIn Easy Apply search for ${company} - ${title}`);
+            showInfo(`🔍 Using your criteria: ${keywords} | ${location} | ${jobType || 'Any'} | ${experience} | ✅ Easy Apply Only`);
             
             setTimeout(() => {
                 try {
                     window.open(searchUrl, '_blank', 'width=1200,height=800');
-                    showInfo(`🔗 LinkedIn opened with your search criteria applied`);
+                    showInfo(`🔗 LinkedIn opened with Easy Apply filter - Quick applications only!`);
                 } catch (error) {
                     showError(`❌ Could not open LinkedIn. Please visit: ${searchUrl}`);
                     console.error('Error opening LinkedIn:', error);
