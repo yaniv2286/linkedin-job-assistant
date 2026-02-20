@@ -422,7 +422,7 @@
                 company: 'Tech Innovation Corp',
                 location: 'Remote, United States',
                 description: 'We are looking for a Senior Software Developer with strong AWS cloud experience. You will work on scalable serverless applications using Lambda, API Gateway, and DynamoDB. Ideal candidate should have experience with C++ and Python in cloud environments.',
-                url: 'https://www.linkedin.com/jobs/view/senior-software-developer-aws-cloud'
+                url: 'https://www.linkedin.com/jobs/search/?keywords=Senior%20Software%20Developer%20AWS%20Cloud'
             },
             {
                 id: '2',
@@ -430,7 +430,7 @@
                 company: 'Enterprise Solutions Inc',
                 location: 'San Francisco Bay Area, CA',
                 description: 'Seeking an experienced Technical Lead to guide our backend development team. You will architect and develop high-performance systems using C++, Python, and cloud technologies. Strong leadership skills and cloud migration experience required.',
-                url: 'https://www.linkedin.com/jobs/view/technical-lead-backend-systems'
+                url: 'https://www.linkedin.com/jobs/search/?keywords=Technical%20Lead%20Backend%20C%2B%2B%20Python'
             },
             {
                 id: '3',
@@ -438,7 +438,7 @@
                 company: 'CloudTech Systems',
                 location: 'Seattle, WA / Remote',
                 description: 'Join our team as a Principal Software Engineer focusing on cloud-native solutions. You will design and implement serverless architectures, mentor team members, and drive technical excellence. Expertise in AWS, microservices, and modern development practices essential.',
-                url: 'https://www.linkedin.com/jobs/view/principal-software-engineer-cloud-native'
+                url: 'https://www.linkedin.com/jobs/search/?keywords=Principal%20Software%20Engineer%20Cloud%20Native'
             },
             {
                 id: '4',
@@ -446,7 +446,7 @@
                 company: 'Financial Innovations Ltd',
                 location: 'New York City, NY',
                 description: 'Leading FinTech company seeking Senior Software Engineer with experience in building high-performance, secure systems. Strong C++ and Python skills required, along with AWS cloud experience. Opportunity to work on cutting-edge financial technology solutions.',
-                url: 'https://www.linkedin.com/jobs/view/senior-software-engineer-fintech'
+                url: 'https://www.linkedin.com/jobs/search/?keywords=Senior%20Software%20Engineer%20FinTech%20C%2B%2B'
             },
             {
                 id: '5',
@@ -454,7 +454,7 @@
                 company: 'Global Tech Solutions',
                 location: 'Austin, TX / Remote',
                 description: 'Looking for a Software Architect to design and implement cloud platform solutions. You will lead architectural decisions, guide development teams, and ensure best practices in cloud-native development. Strong AWS and distributed systems experience required.',
-                url: 'https://www.linkedin.com/jobs/view/software-architect-cloud-platforms'
+                url: 'https://www.linkedin.com/jobs/search/?keywords=Software%20Architect%20Cloud%20Platforms%20AWS'
             }
         ];
 
@@ -553,9 +553,15 @@
         }
 
         function applyForJob(url, title) {
-            showSuccess(`🎯 Opening application for: ${title}`);
+            showSuccess(`🎯 Opening LinkedIn job search for: ${title}`);
             setTimeout(() => {
-                window.open(url, '_blank');
+                try {
+                    window.open(url, '_blank', 'width=1200,height=800');
+                    showInfo(`🔗 LinkedIn opened in new tab - Search for "${title}" positions`);
+                } catch (error) {
+                    showError(`❌ Could not open LinkedIn. Please visit: ${url}`);
+                    console.error('Error opening LinkedIn:', error);
+                }
             }, 1000);
         }
 
